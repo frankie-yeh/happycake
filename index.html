@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>雪花蛋糕頁</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      overflow: hidden;
+      font-family: sans-serif;
+      position: relative;
+    }
+
+    .snowflake {
+      position: fixed;
+      user-select: none;
+      color: white;
+      animation: fall linear forwards;
+      z-index: 10;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+      }
+    }
+
+    .snowflake-pile {
+      color: white;
+      font-size: 12px;
+      position: absolute;
+      z-index: 5;
+    }
+
+    .typewriter {
+      position: absolute;
+      top: 8%;
+      width: 100%;
+      text-align: center;
+      z-index: 20;
+    }
+    .typewriter h1 {
+      display: inline-block;
+      color: white;
+      font-size: 2.5rem;
+      border-right: 2px solid white;
+      white-space: nowrap;
+      overflow: hidden;
+      animation: typing 4s steps(10, end), blink .7s step-end infinite;
+    }
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 10ch }
+    }
+    @keyframes blink {
+      50% { border-color: transparent }
+    }
+
+    .cake-image {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40vw;
+      /*max-width: 500px;*/
+      z-index: 15;
+      opacity: 0.3;
+    }
+
+    @media (max-width: 768px) {
+      .cake-image {
+        width: 120vw;
+      }
+      .typewriter h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 打字動畫文字 -->
+  <div class="typewriter">
+    <h1>XXXXXX</h1>
+  </div>
+
+  <!-- 蛋糕圖片 -->
+  <img src="296107-2_8.jpg" alt="生日蛋糕" class="cake-image">
+
+  <!-- 背景音樂（隱藏控制器） -->
+  <audio src="your-music.mp3" autoplay loop hidden></audio>
+
+  <!-- 雪花動畫 + 底部堆積 -->
+  <script>
+    const snowCount = 80;
+    const pileMap = {}; // 用來記錄每個 x 位置堆疊高度
+
+    for (let i = 0; i < snowCount; i++) {
+      const snow = document.createElement("div");
+      snow.className = "snowflake";
+      snow.innerText = "❄";
+
+      const x = Math.floor(Math.random() * window.innerWidth);
+      snow.style.left = `${x}px`;
+      snow.style.top = "-30px";
+      snow.style.fontSize = `${12 + Math.random() * 12}px`;
+      snow.style.animationDuration = `${5 + Math.random() * 3}s`;
+      document.body.appendChild(snow);
+
+      // 掉落後轉為堆積
+      setTimeout(() => {
+        snow.remove();
+
+        const snowPile = document.createElement("div");
+        snowPile.className = "snowflake-pile";
+        snowPile.innerText = "❄";
+        snowPile.style.left = `${x}px`;
+
+        const pileHeight = pileMap[x] || 0;
+        const y = window.innerHeight - 20 - pileHeight;
+        snowPile.style.top = `${y}px`;
+        pileMap[x] = pileHeight + 12;
+
+        document.body.appendChild(snowPile);
+      }, parseFloat(snow.style.animationDuration) * 1000);
+    }
+
+    // 每幾秒再補充雪花製造堆積
+    setInterval(() => {
+      const snow = document.createElement("div");
+      snow.className = "snowflake";
+      snow.innerText = "❄";
+      const x = Math.floor(Math.random() * window.innerWidth);
+      snow.style.left = `${x}px`;
+      snow.style.top = "-30px";
+      snow.style.fontSize = `${12 + Math.random() * 12}px`;
+      snow.style.animationDuration = `${4 + Math.random() * 3}s`;
+      document.body.appendChild(snow);
+
+      setTimeout(() => {
+        snow.remove();
+        const snowPile = document.createElement("div");
+        snowPile.className = "snowflake-pile";
+        snowPile.innerText = "❄";
+        snowPile.style.left = `${x}px`;
+        const pileHeight = pileMap[x] || 0;
+        const y = window.innerHeight - 20 - pileHeight;
+        snowPile.style.top = `${y}px`;
+        pileMap[x] = pileHeight + 12;
+        document.body.appendChild(snowPile);
+      }, parseFloat(snow.style.animationDuration) * 1000);
+    }, 800);
+  </script>
+</body>
+</html>
