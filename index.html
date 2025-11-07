@@ -18,6 +18,7 @@
       position: relative;
     }
 
+    /* 雪花動畫 */
     .snowflake {
       position: fixed;
       user-select: none;
@@ -25,13 +26,11 @@
       animation: fall linear forwards;
       z-index: 10;
     }
-
     @keyframes fall {
-      to {
-        transform: translateY(100vh);
-      }
+      to { transform: translateY(100vh); }
     }
 
+    /* 雪花堆積 */
     .snowflake-pile {
       color: white;
       font-size: 12px;
@@ -39,28 +38,42 @@
       z-index: 5;
     }
 
+    /* 打字文字區塊 */
     .typewriter {
       position: absolute;
       top: 8%;
-      width: 100%;
+      width: 90%;
+      left: 5%;
       text-align: center;
       z-index: 20;
+      color: white;
     }
+
+    /* 標題打字效果 */
     .typewriter h1 {
       display: inline-block;
       color: white;
       font-size: 2.5rem;
-      border-right: 2px solid white;
       white-space: nowrap;
       overflow: hidden;
-      animation: typing 4s steps(10, end), blink .7s step-end infinite;
+      animation: typing-h1 3s steps(25, end);
     }
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 10ch }
+
+    @keyframes typing-h1 {
+      from { width: 0; }
+      to { width: 25ch; }
     }
-    @keyframes blink {
-      50% { border-color: transparent }
+
+    /* 內文段落（逐字輸出，無游標） */
+    .typewriter p {
+      display: inline-block;
+      text-align: left;
+      font-size: 1rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow: hidden;
+      min-height: 20px;
     }
 
     .cake-image {
@@ -69,70 +82,62 @@
       left: 50%;
       transform: translateX(-50%);
       width: 40vw;
-      /*max-width: 500px;*/
       z-index: 15;
       opacity: 0.6;
     }
 
     @media (max-width: 768px) {
-      .cake-image {
-        width: 120vw;
-      }
-      .typewriter h1 {
-        font-size: 1.8rem;
-      }
+      .cake-image { width: 120vw; }
+      .typewriter h1 { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
-  <!-- 打字動畫文字 -->
   <div class="typewriter">
-    <h1>XXXXXX</h1>
+    <p id="message"></p>
   </div>
 
-  <!-- 蛋糕圖片 -->
   <img src="296107-2_8.png" alt="生日蛋糕" class="cake-image">
 
-  <!-- 背景音樂（隱藏控制器） -->
   <audio src="your-music.mp3" autoplay loop hidden></audio>
 
-  <!-- 雪花動畫 + 底部堆積 -->
+  <script>
+    // === 打字動畫 ===
+    const text = `祝我那位遠在德國、花錢比呼吸還自然的🐯🎂生日快樂🥳
+雖然你一天到晚都在講幹話，但也總是能在亂聊之中逼
+我進步英文、幫我解程式 bug、順便開導我的人生
+（雖然有時候講得比 Google 還不可靠😂）
+我在台灣努力賺錢，你在德國努力散財，這樣我們剛好維持世界平衡💸
+希望你今年能少當一點散財童子，多當一點聚寶盆（我知道這要求有點難🤭）
+不管是聊國際新聞、鄰居八卦還是文化歷史，嘴上沒一句正經的，
+但還是謝謝你這位「幹話界的哲學家」，一直在我身邊鬧陪我講幹話。
+講了那麼多其實我沒有打算減少我的幹話。
+所以啊～
+就繼續花吧，我會繼續努力賺，這樣至少等你回台灣不用真的睡河堤公園
+(我不想住河景第一排或是廢虛風...)🤣
+祝你生日快樂，繼續囂張、繼續快樂、繼續做那個我熟悉的散財老虎🐯✨`;
+
+    const target = document.getElementById("message");
+    let index = 0;
+    const speed = 40; // 打字速度(ms)
+
+    function typeWriter() {
+      if (index < text.length) {
+        const char = text[index];
+        target.innerHTML += (char === '\n') ? '<br>' : char;
+        index++;
+        setTimeout(typeWriter, speed);
+      }
+    }
+    typeWriter();
+  </script>
+
+  <!-- 雪花動畫 -->
   <script>
     const snowCount = 80;
-    const pileMap = {}; // 用來記錄每個 x 位置堆疊高度
+    const pileMap = {};
 
-    for (let i = 0; i < snowCount; i++) {
-      const snow = document.createElement("div");
-      snow.className = "snowflake";
-      snow.innerText = "❄";
-
-      const x = Math.floor(Math.random() * window.innerWidth);
-      snow.style.left = `${x}px`;
-      snow.style.top = "-30px";
-      snow.style.fontSize = `${12 + Math.random() * 12}px`;
-      snow.style.animationDuration = `${5 + Math.random() * 3}s`;
-      document.body.appendChild(snow);
-
-      // 掉落後轉為堆積
-      setTimeout(() => {
-        snow.remove();
-
-        const snowPile = document.createElement("div");
-        snowPile.className = "snowflake-pile";
-        snowPile.innerText = "❄";
-        snowPile.style.left = `${x}px`;
-
-        const pileHeight = pileMap[x] || 0;
-        const y = window.innerHeight - 20 - pileHeight;
-        snowPile.style.top = `${y}px`;
-        pileMap[x] = pileHeight + 12;
-
-        document.body.appendChild(snowPile);
-      }, parseFloat(snow.style.animationDuration) * 1000);
-    }
-
-    // 每幾秒再補充雪花製造堆積
-    setInterval(() => {
+    function createSnow() {
       const snow = document.createElement("div");
       snow.className = "snowflake";
       snow.innerText = "❄";
@@ -155,7 +160,10 @@
         pileMap[x] = pileHeight + 12;
         document.body.appendChild(snowPile);
       }, parseFloat(snow.style.animationDuration) * 1000);
-    }, 800);
+    }
+
+    for (let i = 0; i < snowCount; i++) createSnow();
+    setInterval(createSnow, 800);
   </script>
 </body>
 </html>
