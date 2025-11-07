@@ -93,37 +93,40 @@
   </style>
 </head>
 <body>
-  <div class="typewriter">
+<div class="typewriter">
     <p id="message"></p>
   </div>
 
   <img src="296107-2_8.png" alt="生日蛋糕" class="cake-image">
 
-  <audio id="bgm" src="birthday.mp3" loop></audio>
+  <audio id="bgm" src="birthday.mp3" loop muted></audio>
 
 <script>
-  // 嘗試自動播放音樂
-  const bgm = document.getElementById("bgm");
-  function tryPlay() {
-    bgm.play().then(() => {
-      console.log("🎵 音樂播放成功");
-    }).catch(() => {
-      console.log("🔇 瀏覽器阻擋了自動播放，等待使用者互動");
-      // 等使用者點擊或按鍵後再播放
-      document.body.addEventListener('click', playOnce, { once: true });
-      document.body.addEventListener('touchstart', playOnce, { once: true });
-    });
+const bgm = document.getElementById("bgm");
+window.addEventListener('load', async () => {
+  try {
+    await bgm.play();
+    // 漸漸開音量
+    let vol = 0;
+    const fade = setInterval(() => {
+      if (vol < 1) {
+        vol += 0.1;
+        bgm.volume = vol;
+      } else {
+        clearInterval(fade);
+      }
+    }, 200);
+  } catch (e) {
+    document.body.addEventListener('click', () => {
+      bgm.muted = false;
+      bgm.play();
+    }, { once: true });
   }
-
-  function playOnce() {
-    bgm.play();
-  }
-
-  // 頁面載入後立即嘗試播放
-  window.addEventListener('load', tryPlay);
+});
 </script>
 
-  <script>
+
+<script>
     // === 打字動畫 ===
     const text = `祝我那位遠在德國、靠幹話維生的🐯🎂生日快樂🥳
 雖然你一天到晚都在講幹話，但也總是能在亂聊之中逼
@@ -156,7 +159,7 @@
   </script>
 
   <!-- 雪花動畫 -->
-  <script>
+<script>
     const snowCount = 80;
     const pileMap = {};
 
