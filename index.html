@@ -99,38 +99,89 @@
 
   <img src="296107-2_8.png" alt="生日蛋糕" class="cake-image">
 
-  <audio id="bgm" src="birthday.mp3" loop muted></audio>
+  <!-- 背景音樂 -->
+<!-- 背景音樂 -->
+<!-- 背景音樂 -->
+<!-- 背景音樂 -->
+<audio id="bgm" src="birthday.mp3" loop></audio>
+
+<!-- 小音符播放按鈕 -->
+<button id="musicBtn" style="
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 9999;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+  color: white;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,0.6));
+  transition: transform 0.3s ease, filter 0.3s ease;
+  outline: none;
+">💿️</button>
+
+<style>
+/* 播放中旋轉動畫 */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 閃亮光暈效果 */
+@keyframes glow {
+  0%   { filter: drop-shadow(0 0 4px rgba(255,255,255,0.3)); }
+  50%  { filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)) drop-shadow(0 0 30px rgba(255,255,255,0.5)); }
+  100% { filter: drop-shadow(0 0 4px rgba(255,255,255,0.3)); }
+}
+
+/* 播放狀態 class */
+.playing {
+  animation: spin 5s linear infinite, glow 2s ease-in-out infinite;
+  color: #ffe680; /* 柔和金黃色調 */
+}
+</style>
 
 <script>
-const bgm = document.getElementById("bgm");
-window.addEventListener('load', async () => {
+const bgm = document.getElementById('bgm');
+const btn = document.getElementById('musicBtn');
+
+// 一開始顯示音符，暫停狀態
+btn.style.display = 'block';
+bgm.pause();
+
+// 點擊切換播放/暫停
+btn.addEventListener('click', async () => {
   try {
-    await bgm.play();
-    // 漸漸開音量
-    let vol = 0;
-    const fade = setInterval(() => {
-      if (vol < 1) {
-        vol += 0.1;
-        bgm.volume = vol;
-      } else {
-        clearInterval(fade);
-      }
-    }, 200);
-  } catch (e) {
-    document.body.addEventListener('click', () => {
-      bgm.muted = false;
-      bgm.play();
-    }, { once: true });
+    if (bgm.paused) {
+      await bgm.play();
+      btn.classList.add('playing');
+      btn.textContent = '💿️';
+    } else {
+      bgm.pause();
+      btn.classList.remove('playing');
+      btn.textContent = '💿️';
+    }
+  } catch (err) {
+    console.log('播放被阻擋或發生錯誤：', err);
   }
 });
+
+// 若播放中被中斷或暫停，自動更新按鈕狀態
+bgm.addEventListener('pause', () => btn.classList.remove('playing'));
+bgm.addEventListener('play', () => btn.classList.add('playing'));
 </script>
+
+
+
+
 
 
 <script>
     // === 打字動畫 ===
     const text = `祝我那位遠在德國、靠幹話維生的🐯🎂生日快樂🥳
 雖然你一天到晚都在講幹話，但也總是能在亂聊之中逼
-我進步英文、幫我解程式 bug、順便開導我的人生
+我進步英文、跟我一起debug、順便開導我的人生
 （雖然有時候講得比 Google 還不可靠😂）
 我在台灣努力賺錢，你在德國努力散財，這樣我們剛好合作無間💸
 希望你今年能少當一點散財童子，多當一點聚寶盆（我知道這要求有點難🤭）
